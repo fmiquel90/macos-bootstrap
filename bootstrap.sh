@@ -1,30 +1,5 @@
 #!/bin/bash
 
-VSCODE_OS="darwin-universal"
-
-# ------
-# Colors
-# ------
-NOCOLOR='\033[0m'
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-
-function echo_green {
-    MESSAGE=$1
-    echo -e "${GREEN}${MESSAGE}${NOCOLOR}"
-}
-
-function echo_red {
-    MESSAGE=$1
-    echo -e "${RED}${MESSAGE}${NOCOLOR}"
-}
-
-function install_macos_app {
-    APP_NAME=$1
-    
-    
-}
-
 function install_vscode {
     VSCODE_OS=${1:-"darwin-universal"}
     if [[ ! -d "/Applications/Visual Studio Code.app" ]]; then
