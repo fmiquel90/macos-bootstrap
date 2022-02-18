@@ -43,21 +43,21 @@ function install_zsh {
         brew install zsh
         chsh -s /usr/local/bin/zsh
     else
-        echo "Already installed"
+        echo "ZSH already installed"
     fi
 }
 
 function install_oh_my_zsh {
-    if [[ ! -d "~/.oh-my-zsh" ]]; then
+    if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
     else
-        echo "Already installed"
+        echo "OhMyZSH already installed"
     fi
 }
 
 function install_p10k_zsh_theme {
     if [[ ! -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]]; then
-        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$HOME/.oh-my-zsh/custom/themes/powerlevel10k"
     else
         echo "ZSH theme P10K already installed"
     fi
@@ -67,9 +67,10 @@ function install_asdf {
     ASDF_DIR="$HOME/.asdf"
     ASDF_COMPLETIONS="$ASDF_DIR/completions"
     
-    if test ! $(which adfs); then
+    if test ! $(which asdf); then
         mkdir -p $ASDF_DIR
         mkdir -p $ASDF_COMPLETIONS
+        git clone https://github.com/asdf-vm/asdf.git $ASDF_DIR --branch v${ASDF_VERSION}
     else
         echo "ASDF already installed"
     fi
@@ -166,6 +167,8 @@ echo ""
 echo "##########"
 echo "## ASDF ##"
 echo "##########"
+export ASDF_DIR="$HOME/.asdf"
+export ASDF_COMPLETIONS="$ASDF_DIR/completions"
 echo "-- Install Python --"
 asdf plugin add python
 asdf install python ${PYTHON_VERSION}
