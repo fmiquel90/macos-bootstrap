@@ -18,3 +18,6 @@ export ASDF_DIR="$HOME/.asdf"
 export ASDF_COMPLETIONS="$ASDF_DIR/completions"
 . $ASDF_DIR/libexec/asdf.sh
 . $ASDF_DIR/etc/bash_completion.d/asdf.bash
+
+# Visual Studio Code
+export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"
