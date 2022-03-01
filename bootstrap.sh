@@ -2,7 +2,7 @@
 
 # Default variables
 TERRAFORM_VERSION=1.1.6
-TERRAFORM_DOCS_VERSION=0.16
+TERRAFORM_DOCS_VERSION=0.16.0
 TERRAGRUNT_VERSION=0.36.1
 PYTHON_VERSION=3.9.10
 VSCODE_VERSION=darwin-universal
@@ -45,7 +45,7 @@ install_keeweb () {
 install_menu_meters () {
     temp_dir=$(mktemp -d)
     curl --silent -L -o "${temp_dir}/menumeters.zip" "https://github.com/emcrisostomo/MenuMeters/releases/download/1.9.8.1%2Bemc/MenuMeters-1.9.8.1+emc.dmg"
-    hdiutil attach -quiet "${temp_dir}/MenuMeters-1.9.8.1+emc.dmg"
+    hdiutil attach -quiet "${temp_dir}/menumeters.zip"
     installer -pkg /Volumes/MenuMeters/MenuMeters.pkg -target CurrentUserHomeDirectory
     hdiutil detach /Volumes/MenuMeters
 }
@@ -68,8 +68,22 @@ install_oh_my_zsh () {
 }
 
 install_p10k_zsh_theme () {
-    if [ ! -d "${HOME}/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
-        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${HOME}/.oh-my-zsh/custom/themes/powerlevel10k"
+    if [ ! -d "${HOME}/powerlevel10k" ]; then
+        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${HOME}/powerlevel10k"
+        # Configuration
+        cp configs/.p10k.zsh "${HOME}"
+        # Fonts
+        FONTS_URL="""
+        https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
+        https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
+        https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
+        https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
+        """
+        for font_url in ${FONTS_URL};
+        do
+            (cd /Library/Fonts && curl --silent -L "${font_url}")
+        done
+        echo "Don't forget to configure 'MesloLGS NF' in your terminal"
     else
         echo "ZSH theme P10K already installed"
     fi
@@ -78,11 +92,11 @@ install_p10k_zsh_theme () {
 install_asdf () {
     ASDF_DIR="${HOME}/.asdf"
     ASDF_COMPLETIONS="${ASDF_DIR}/completions"
-    
-    if test ! "$(command -v asdf || true)"; then
-        mkdir -p "${ASDF_DIR}"
-        mkdir -p "${ASDF_COMPLETIONS}"
+    CHECK_CMD=$(command -v asdf)
+
+    if [ -z "${CHECK_CMD}" ]; then
         git clone https://github.com/asdf-vm/asdf.git "${ASDF_DIR}" --branch "v${ASDF_VERSION}"
+        mkdir -p "${ASDF_COMPLETIONS}"
     else
         echo "ASDF already installed"
     fi
@@ -183,16 +197,19 @@ echo "##########"
 export ASDF_DIR="${HOME}/.asdf"
 export ASDF_COMPLETIONS="${ASDF_DIR}/completions"
 echo "-- Install Python --"
-asdf plugin add python
-asdf install python "${PYTHON_VERSION}"
-asdf global python "${PYTHON_VERSION}"
+"${ASDF_DIR}/bin/asdf" plugin add python
+"${ASDF_DIR}/bin/asdf" install python "${PYTHON_VERSION}"
+"${ASDF_DIR}/bin/asdf" global python "${PYTHON_VERSION}"
 echo "-- Install Terraform / Terraform-docs / Terragrunt --"
-asdf plugin add terraform
-asdf install terraform "${TERRAFORM_VERSION}"
-asdf plugin add terraform-docs
-asdf install terraform-docs "${TERRAFORM_DOCS_VERSION}"
-asdf plugin add terragrunt
-asdf install terragrunt "${TERRAGRUNT_VERSION}"
+"${ASDF_DIR}/bin/asdf" plugin add terraform
+"${ASDF_DIR}/bin/asdf" install terraform "${TERRAFORM_VERSION}"
+"${ASDF_DIR}/bin/asdf" global terraform "${TERRAFORM_VERSION}"
+"${ASDF_DIR}/bin/asdf" plugin add terraform-docs
+"${ASDF_DIR}/bin/asdf" install terraform-docs "${TERRAFORM_DOCS_VERSION}"
+"${ASDF_DIR}/bin/asdf" global terraform-docs "${TERRAFORM_DOCS_VERSION}"
+"${ASDF_DIR}/bin/asdf" plugin add terragrunt
+"${ASDF_DIR}/bin/asdf" install terragrunt "${TERRAGRUNT_VERSION}"
+"${ASDF_DIR}/bin/asdf" global terragrunt "${TERRAGRUNT_VERSION}"
 echo "###########"
 echo "## Python #"
 echo "###########"
@@ -257,9 +274,9 @@ defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 
 ## CREATE
 FOLDERS="""
-~/git
-~/scripts
-~/experiments
+${HOME}/git
+${HOME}/scripts
+${HOME}/experiments
 """
 echo "Creating folder structure..."
 
