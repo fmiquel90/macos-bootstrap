@@ -20,7 +20,8 @@ install_vscode () {
     if [ ! -d "/Applications/Visual Studio Code.app" ]; then
         temp_dir=$(mktemp -d)
         app_temp_dir=${temp_dir}/app
-        curl --silent -L -o "${temp_dir}/vscode.zip" "https://code.visualstudio.com/sha/download?build=stable&os=${VSCODE_OS}"
+        curl --silent -L -o "${temp_dir}/vscode.zip" "https://code.visualstudio.com/sha/download?build=stable&os=${VSCODE_OS}.zip"
+        unzip "${temp_dir}/vscode.zip" -d "${app_temp_dir}"
         cp -Rf "${app_temp_dir}/Visual Studio Code.app" /Applications/
     else
         echo "Visual Studio Code already installed"
@@ -104,8 +105,6 @@ install_asdf () {
 
 install_brew () {
     if test ! "$(command -v brew || true)"; then
-        export HOMEBREW_BREW_GIT_REMOTE="..."  # put your Git mirror of Homebrew/brew here
-        export HOMEBREW_CORE_GIT_REMOTE="..."  # put your Git mirror of Homebrew/homebrew-core here
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh || true)"
         brew update
     else
